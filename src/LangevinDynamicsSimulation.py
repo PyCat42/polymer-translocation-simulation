@@ -683,7 +683,8 @@ class LangevinDynamicsSimulation:
         :param filename: name of the file to which gif is saved
         :return:
         """
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax.set_title("Langevin Dynamics Simulation")
 
         # wall setup:
         # draw wall:
@@ -792,7 +793,8 @@ class LangevinDynamicsSimulation:
         :param filename: name of the file to which gif is saved
         :return:
         """
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax.set_title("Langevin Dynamics Simulation")
 
         # wall setup:
         # draw wall:
