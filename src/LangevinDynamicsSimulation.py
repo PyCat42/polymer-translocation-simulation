@@ -648,7 +648,7 @@ class LangevinDynamicsSimulation:
         :param filename: name of the file to which snapshot is saved
         :return:
         """
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, ax = plt.subplots(figsize=(8, 8))
 
         # draw wall:
         x_wall = self.wall_beads[:, 0]
@@ -670,6 +670,7 @@ class LangevinDynamicsSimulation:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
+        plt.tight_layout()
         plt.savefig(filename, dpi=300)
         plt.close(fig)
 
@@ -782,6 +783,7 @@ class LangevinDynamicsSimulation:
             return line, dots, state_text
 
         # forward to animation function and save the gif
+        plt.tight_layout()
         anim = FuncAnimation(fig, update, frames=frame_generator, init_func=init, blit=True, save_count=1000)
         anim.save(filename, writer=PillowWriter(fps=20))
         plt.close()
@@ -901,6 +903,7 @@ class LangevinDynamicsSimulation:
             return line, dots, state_text
 
         # forward to animation function and save the gif
+        plt.tight_layout()
         anim = FuncAnimation(fig, update, frames=frame_generator, init_func=init, blit=True, save_count=1000)
         anim.save(filename, writer=PillowWriter(fps=20))
         plt.close()

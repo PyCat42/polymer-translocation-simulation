@@ -81,7 +81,7 @@ def plot_time_histos(sim_type, process, dict_list, normalize=True, do_pdf=False)
         bin_edges = np.histogram_bin_edges(times_to_plot, bins='auto', range=(0, max_range))
         bin_num = len(bin_edges) - 1
 
-        plt.figure()
+        plt.figure(figsize=(8, 6))
         # plotting as PDF enables comparison between times for different values of N
         color = 'skyblue' if sim_type == "FB" else 'navajowhite'
         edgecolor = 'blue' if sim_type == "FB" else 'orange'
@@ -101,6 +101,7 @@ def plot_time_histos(sim_type, process, dict_list, normalize=True, do_pdf=False)
         plt.legend(loc='best')
 
         filename = f"{sim_type}_{process}_times_PDF{do_pdf}_histogram_N_{n}.jpg"
+        plt.tight_layout()
         plt.savefig(filename)
         plt.show()
 
@@ -154,7 +155,7 @@ def plot_time_histos_comparisson(process, FB_dict_list, LD_dict_list):
         FB_normalized = FB_times[n] / np.mean(FB_times[n])
         LD_normalized = LD_times[n] / np.mean(LD_times[n])
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
 
         max_range = max(FB_normalized.max(), LD_normalized.max())
         bin_edges = np.histogram_bin_edges(FB_normalized, bins='auto', range=(0, max_range))
@@ -210,7 +211,7 @@ def plot_time_histos_colapse(sim_type, process, dict_list):
     weights = 1 / (np.array(std_errors) ** 2 + 1e-12)
     scaling, intercept = np.polyfit(log_N_vals, log_mean_times, 1, w=weights)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 6))
 
     cmap = plt.colormaps['Blues'] if sim_type == "FB" else plt.colormaps['Oranges']
     num_curves = len(N_vals)
@@ -235,10 +236,11 @@ def plot_time_histos_colapse(sim_type, process, dict_list):
     ax.legend()
 
     filename = f"{sim_type}_collapse_{process}_times_histogram.jpg"
+    plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.show()
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 6))
     for i, n in enumerate(N_vals):
         sns.kdeplot(all_normalized_times[i], ax=ax, color=colors[i],
                     linewidth=1, label=f'N = {n}', bw_adjust=1.2, clip=(0, None))
@@ -250,6 +252,7 @@ def plot_time_histos_colapse(sim_type, process, dict_list):
     ax.legend()
 
     filename = f"{sim_type}_collapse_{process}_times_KDE.jpg"
+    plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.show()
 
@@ -280,7 +283,7 @@ def plot_times(sim_type, process,  dict_list, filename=None):
     mean_times = [np.mean(all_times_dict[n]) for n in N_vals]
     std_errors = [np.std(all_times_dict[n]) / np.sqrt(len(all_times_dict[n])) for n in N_vals]
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 6))
 
     color = 'blue' if sim_type == "FB" else 'orange'
     ax.errorbar(N_vals, mean_times, yerr=std_errors, color=color,
@@ -308,6 +311,7 @@ def plot_times(sim_type, process,  dict_list, filename=None):
 
     if filename is None:
         filename = f"{sim_type}_{process}_times.jpg"
+    plt.tight_layout()
     plt.savefig(filename, dpi=300)
 
     plt.show()
@@ -362,7 +366,7 @@ def plot_times_comparison(process, FB_dict_list, LD_dict_list, filename=None):
     LD_mean_normalized = LD_mean_times / LD_baseline
     LD_std_err_normalized = LD_std_err / LD_baseline
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 6))
 
     # plot datapoints with errorbars
     ax.errorbar(FB_N_vals, FB_mean_normalized, yerr=FB_std_err_normalized,
@@ -403,6 +407,7 @@ def plot_times_comparison(process, FB_dict_list, LD_dict_list, filename=None):
 
     if filename is None:
         filename = f"comparison_{process}_times.jpg"
+    plt.tight_layout()
     plt.savefig(filename, dpi=300)
 
     plt.show()
@@ -436,13 +441,14 @@ def translocation_success_rate(sim_type, dict_list):
 
         print(f"N = {n}: Total Runs = {total_attempts}, Successes = {successful_attempts}, Rate = {success_rate:.2f}%")
 
-    plt.figure()
+    plt.figure(figsize=(8, 6))
     plt.scatter(N_vals, success_rate_list)
     plt.title("Translocation Success Rate")
     plt.xlabel("Number of Monomers N")
     plt.ylabel("Successful Translocations (%)")
 
     filename = f"{sim_type}_translocation_success_rate.jpg"
+    plt.tight_layout()
     plt.savefig(filename, dpi=300)
     plt.show()
 
@@ -463,7 +469,7 @@ def plot_waiting_time(sim_type, dict_list):
         waiting_times_avg = np.mean(waiting_times_matrix, axis=0)
         mon_indices = np.arange(1, n + 1)
 
-        fig = plt.figure()
+        fig = plt.figure(figsize=(8, 6))
 
         plt.scatter(mon_indices, waiting_times_avg)
         plt.title(f"Monomer waiting times (N = {n})")
@@ -471,5 +477,6 @@ def plot_waiting_time(sim_type, dict_list):
         plt.ylabel("Waiting times")
 
         filename = f"{sim_type}_waiting_times_{n}.jpg"
+        plt.tight_layout()
         plt.savefig(filename, dpi= 300)
         plt.show()

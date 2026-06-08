@@ -390,7 +390,7 @@ class FluctuatingBondSimulation:
         :param filename: name of the file to which snapshot is saved
         :return:
         """
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, ax = plt.subplots(figsize=(8, 8))
 
         # draw wall:
         # - upper half
@@ -424,6 +424,7 @@ class FluctuatingBondSimulation:
 
         if filename is None:
             filename = f"FB_{process}.png"
+        plt.tight_layout()
         plt.savefig(filename)
 
         plt.close(fig)
@@ -546,6 +547,7 @@ class FluctuatingBondSimulation:
             return line, dots, state_text
 
         # forward to animation function and save the gif
+        plt.tight_layout()
         anim = FuncAnimation(fig, update, frames=frame_generator, init_func=init, blit=True, save_count=1000)
         anim.save(filename, writer=PillowWriter(fps=20))
         plt.close()
@@ -663,6 +665,7 @@ class FluctuatingBondSimulation:
             return line, dots, state_text
 
         # forward to animation function and save the gif
+        plt.tight_layout()
         anim = FuncAnimation(fig, update, frames=frame_generator, init_func=init, blit=True, save_count=1000)
         anim.save(filename, writer=PillowWriter(fps=20))
         plt.close()
