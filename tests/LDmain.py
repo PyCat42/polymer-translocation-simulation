@@ -3,7 +3,7 @@ Demonstrating the use of simulation and parallelization classes.
 """
 
 import time
-
+from src.LangevinDynamicsSimulation import LangevinDynamicsSimulation
 from src.Parallelization import Parallelization
 
 if __name__ == "__main__":
