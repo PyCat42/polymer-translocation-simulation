@@ -69,6 +69,8 @@ class FluctuatingBondSimulation:
 
         self.monomers = np.zeros((N, 2))  # list of monomer coordinates
 
+        self.is_equilibration = False  # flag for equilibration process
+
     # ------------------------------------------------------------------------------------------------------
     # Check physical limitations...
     # ------------------------------------------------------------------------------------------------------
@@ -149,14 +151,18 @@ class FluctuatingBondSimulation:
         :param new_loc: location to which monomer is to be moved
         :return:
         """
-        # only the potential of the monomer whose location is updated changes
-        x = new_loc[0]
-        if x < self.pore_entrance:
-            return - self.E * self.pore_entrance
-        elif x > self.pore_exit:
-            return - self.E * self.pore_exit
+        if self.is_equilibration:
+            # no electric field during equilibration!
+            return 0.0
         else:
-            return - self.E * x
+            # only the potential of the monomer whose location is updated changes
+            x = new_loc[0]
+            if x < self.pore_entrance:
+                return - self.E * self.pore_entrance
+            elif x > self.pore_exit:
+                return - self.E * self.pore_exit
+            else:
+                return - self.E * x
 
     def calculate_potential(self, mon_num, new_loc):
         """
@@ -231,10 +237,14 @@ class FluctuatingBondSimulation:
         :param pinned_monomers: monomers that are not allowed to move during the step
         :return:
         """
+        self.is_equilibration = True
+
         # run MC steps
         time = int(20 * self.N ** 2.5)  # Rouse equilibration time ~ N^2
         for t in range(time):
             self.MC_step(pinned_monomers=pinned_monomers)
+
+        self.is_equilibration = False
 
     # ------------------------------------------------------------------------------------------------------
     # Simulate escape...
@@ -249,9 +259,9 @@ class FluctuatingBondSimulation:
         :return:
         """
         # are all monomers to the right of the wall?
-        all_right = np.all(self.monomers[:, 0] > self.L)
+        all_right = np.all(self.monomers[:, 0] > self.pore_exit)
         # are all monomers to the left of the wall?
-        all_left = np.all(self.monomers[:, 0] < 0)
+        all_left = np.all(self.monomers[:, 0] < self.pore_entrance)
         # if either one is true the monomer has escaped
         return all_right or all_left
 
@@ -490,8 +500,11 @@ class FluctuatingBondSimulation:
             if phase == 'Equilibration':
                 state_text.set_text('Equilibration')
 
+                self.is_equilibration = True
+
                 # pin monomers inside the pore
-                pinned_monomers = [m for m in range(self.N) if 0 <= self.monomers[m, 0] <= self.L]
+                pinned_monomers = [m for m in range(self.N)
+                                   if self.pore_entrance <= self.monomers[m, 0] <= self.pore_exit]
 
                 # run this step for 50 frames
                 steps_per_frame = int((20 * self.N**2.5) / 50)
@@ -501,6 +514,9 @@ class FluctuatingBondSimulation:
             # Phase 2: Translocation
             elif phase == 'Translocation':
                 state_text.set_text('Translocation (escape)')
+
+                self.is_translocation = False
+
                 for _ in range(20):
                     if not self.escape_stopping_condition():
                             self.MC_step()
@@ -590,6 +606,8 @@ class FluctuatingBondSimulation:
             if phase == 'Equilibration':
                 state_text.set_text('Equilibration')
 
+                self.is_equilibration = True
+
                 # run this step for 50 frames - only the first monomer is pinned
                 steps_per_frame = int((20 * self.N**2.5) / 50)
                 for _ in range(steps_per_frame):
@@ -598,6 +616,9 @@ class FluctuatingBondSimulation:
             # Phase 2: Translocation
             elif phase == 'Translocation':
                 state_text.set_text('Translocation (escape)')
+
+                self.is_equilibration = False
+
                 for _ in range(20):
                     if self.translocation_stopping_condition() == "running":
                             self.MC_step()
