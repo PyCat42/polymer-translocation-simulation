@@ -698,11 +698,14 @@ class LangevinDynamicsSimulation:
         dots = ax.scatter([], [], c=[], cmap='viridis_r', vmin=0, vmax=self.N, edgecolor='black', s=30)
 
         # text overlay setup
-        state_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=12, fontweight='bold')
+        state_text = ax.text(0.05, 0.95, '',
+                             va='top', ha='left',
+                             transform=ax.transAxes, fontsize=12, fontweight='bold')
 
         # create simple linear monomer with first monomer at the entrance of the pore
         self.r_mon = np.zeros((self.N, 2))
-        self.r_mon[:, 0] = self.pore_entrance - np.arange(self.N) * 0.7
+        bond_length = 1.1 * self.sigma
+        self.r_mon[:, 0] = self.pore_entrance - np.arange(bond_length * self.N, step=bond_length)
 
         # initialize graphics
         def init():
@@ -726,7 +729,7 @@ class LangevinDynamicsSimulation:
                 if count > 5000: break
 
             # Phase 3: Escape complete
-            for f in range(10):
+            for f in range(25):
                 yield ('Done', f)
 
         # update image for every frame
@@ -736,7 +739,11 @@ class LangevinDynamicsSimulation:
 
             # Phase 1: Equilibration (50 frames, Rouse time)
             if phase == 'Equilibration':
-                state_text.set_text('Equilibration')
+                state_text.set_text(
+                    f'Equilibration\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
                 self.is_equilibration = True
                 # run this step for 50 frames
                 steps_per_frame = int((self.N**2.5) / (50 * self.dt))
@@ -748,7 +755,11 @@ class LangevinDynamicsSimulation:
 
             # Phase 2: Translocation
             elif phase == 'Translocation':
-                state_text.set_text('Translocation')
+                state_text.set_text(
+                    f'Translocation\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
                 self.is_equilibration = False
                 for _ in range(1000):
                     if self.translocation_stopping_condition() == 'running':
@@ -796,13 +807,26 @@ class LangevinDynamicsSimulation:
         dots = ax.scatter([], [], c=[], cmap='viridis_r', vmin=0, vmax=self.N, edgecolor='black', s=30)
 
         # text overlay setup
-        state_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=12, fontweight='bold')
+        state_text = ax.text(0.05, 0.95, '',
+                             va='top', ha='left',
+                             transform=ax.transAxes, fontsize=12, fontweight='bold')
 
         # create simple linear monomer with first monomer at the entrance of the pore
         self.r_mon = np.zeros((self.N, 2))
         spacings = np.arange(self.N) - (self.N - 1) / 2
         bond_length = 1.1 * self.sigma
-        self.r_mon[:, 0] = bond_length * spacings
+        self.r_mon[:, 0] = bond_length * spacings[::-1]
+
+        pinned_monomers = [i for i in range(self.N)
+                           if self.pore_entrance <= self.r_mon[i, 0] <= self.pore_exit]
+
+        if not pinned_monomers:
+            if self.N % 2 == 0:
+                pinned_monomers = [self.N // 2 - 1, self.N // 2]
+            else:
+                pinned_monomers = [self.N // 2]
+
+        pinned_locs = self.r_mon[pinned_monomers].copy()
 
         # initialize graphics
         def init():
@@ -835,13 +859,12 @@ class LangevinDynamicsSimulation:
 
             # Phase 1: Equilibration (50 frames, Rouse time)
             if phase == 'Equilibration':
-                state_text.set_text('Equilibration')
+                state_text.set_text(
+                    f'Equilibration\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
                 self.is_equilibration = True
-
-                # fix monomers in the middle of the pore so they can't escape during equilibration
-                pinned_monomers = [i for i in range(self.N) if
-                                   self.pore_entrance <= self.r_mon[i, 0] <= self.pore_exit]
-                pinned_locs = self.r_mon[pinned_monomers, :].copy()
 
                 # run this step for 50 frames
                 steps_per_frame = int((self.N**2.5) / (50 * self.dt))
@@ -854,7 +877,11 @@ class LangevinDynamicsSimulation:
 
             # Phase 2: Escape
             elif phase == 'Escape':
-                state_text.set_text('Escape')
+                state_text.set_text(
+                    f'Escape\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
                 self.is_equilibration = False
                 for _ in range(1000):
                     if not self.escape_stopping_condition():

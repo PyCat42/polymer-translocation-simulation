@@ -52,7 +52,7 @@ class FluctuatingBondSimulation:
     RIGHT = (0, 1)
     LEFT = (0, -1)
 
-    def __init__(self, N, L=3.0, w=2.0, J=0, E=5.0, kBT=1.0):
+    def __init__(self, N, L=3.0, w=2.0, J=0, E=0.0, kBT=1.0):
         self.N = N  # number of monomers in the polymer
 
         self.L = L  # length of the pore
@@ -456,10 +456,12 @@ class FluctuatingBondSimulation:
         # - bonds
         line, = ax.plot([], [], color='black', alpha=0.6, linewidth=1)
         # - monomers
-        dots = ax.scatter([], [], c=[], cmap='viridis_r', vmin=0, vmax=self.N, edgecolor='black', s=30)
+        dots = ax.scatter([], [], c=[], cmap='viridis', vmin=0, vmax=self.N, edgecolor='black', s=30)
 
         # text overlay setup
-        state_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=12, fontweight='bold')
+        state_text = ax.text(0.05, 0.95, '',
+                             va='top', ha='left',
+                             transform=ax.transAxes, fontsize=12, fontweight='bold')
 
         # create simple linear monomer with center in the middle of the pore
         self.monomers = np.zeros((self.N, 2))
@@ -498,7 +500,11 @@ class FluctuatingBondSimulation:
 
             # Phase 1: Equilibration (50 frames, Rouse time)
             if phase == 'Equilibration':
-                state_text.set_text('Equilibration')
+                state_text.set_text(
+                    f'Equilibration\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
 
                 self.is_equilibration = True
 
@@ -513,7 +519,11 @@ class FluctuatingBondSimulation:
 
             # Phase 2: Translocation
             elif phase == 'Translocation':
-                state_text.set_text('Translocation (escape)')
+                state_text.set_text(
+                    f'Escape\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
 
                 self.is_translocation = False
 
@@ -567,7 +577,9 @@ class FluctuatingBondSimulation:
         dots = ax.scatter([], [], c=[], cmap='viridis_r', vmin=0, vmax=self.N, edgecolor='black', s=30)
 
         # text overlay setup
-        state_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=12, fontweight='bold')
+        state_text = ax.text(0.05, 0.95, '',
+                             va='top', ha='left',
+                             transform=ax.transAxes, fontsize=12, fontweight='bold')
 
         # create simple linear monomer with center in the middle of the pore
         self.monomers = np.zeros((self.N, 2))
@@ -604,7 +616,11 @@ class FluctuatingBondSimulation:
 
             # Phase 1: Equilibration (50 frames, Rouse time)
             if phase == 'Equilibration':
-                state_text.set_text('Equilibration')
+                state_text.set_text(
+                    f'Equilibration\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
 
                 self.is_equilibration = True
 
@@ -615,7 +631,11 @@ class FluctuatingBondSimulation:
 
             # Phase 2: Translocation
             elif phase == 'Translocation':
-                state_text.set_text('Translocation (escape)')
+                state_text.set_text(
+                    f'Translocation\n'
+                    f'N = {self.N}\n'
+                    f'E = {self.E}'
+                )
 
                 self.is_equilibration = False
 
