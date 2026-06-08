@@ -5,6 +5,13 @@ developed as part of a research project on **polymer translocation through nanop
 The project explores the scaling laws of translocation times,
 comparing theoretical models from polymer physics with numerical results.
 
+
+| Polymer Escape Animations | Polymer Translocation Animations |
+|---------------------------|----------------------------------|
+| ![](images/FB_escape.gif) | ![](images/FB_translocation.gif) |
+| ![](images/LD_escape.gif) | ![](images/LD_translocation.gif) |
+
+
 ## Overview
 
 Polymer translocation is a highly non-equilibrium biological process where a macromolecule
@@ -53,16 +60,67 @@ url: https://doi.org/10.1063/1.2357118
 
 ## Key Parameters Investigated
 
-...
+* **Escape time:** average time needed for a polymer
+whose middle monomer is initially located in the middle of the pore
+to escape the pore to the either side of the membrane 
+(used in the case of zero external field to avoid unphysical assumptions).
+Lower theoretical limit for real polymers in 2D is $\alpha = 2.5$.
+* **Translocation time:** average time needed for a polymer
+whose first monomer is initially located at the pore entrance
+to translocate through the pore to the other side of the membrane.
+Lower theoretical limit for real polymers in 2D:
+  * $\alpha = 1.5$ for short chains,
+  * $\alpha = 1.75$ for long chains.
+* **Waiting times:** the time duration between the
+events when monomers m and m+1 exit the pore.
+This distribution should be symmetrical for shorter polymers, 
+but asymmetrical (biased to higher monomer numbers) for longer polymers.
 
 ## Features
 
-* [FluctuatingBondSimulation.py](src/FluctuatingBondSimulation.py) - 
-* [LangevinDynamics.py](src/LangevinDynamicsSimulation.py) - 
-* [Paralelization.py](src/Paralelization.py) - 
-* [Analysis.py](src/Analysis.py) - 
+* [FluctuatingBondSimulation.py](src/FluctuatingBondSimulation.py) - Implements class
+for simulating polymer translocation using Fluctuating Bond model.
+* [LangevinDynamics.py](src/LangevinDynamicsSimulation.py) - Implements class
+for simulating polymer translocation using Langevin Dynamics model.
+* [Paralelization.py](src/Paralelization.py) - Implements class for concurrently running
+polymer translocation simulations on desired number of processes.
+* [Analysis.py](src/Analysis.py) - Contains functions for analysis of acquired simulation data.
 
-Additional scripts that demonstrate the use of 
+Additional scripts found in folder [tests](tests/) demonstrate the use of functions.
+
+## Data Analysis Features
+
+* Escape/Translocation times histograms (PDF or not, normalized to mean time or not)
+
+| Example: Escape                                         | Example: Translocation                                         |
+|---------------------------------------------------------|----------------------------------------------------------------|
+| ![](images/LD_escape_times_PDFFalse_histogram_N_15.jpg) | ![](images/LD_translocation_times_PDFFalse_histogram_N_15.jpg) |
+
+* Comparisson between escape/translocation time histograms for the two simulations
+
+| Example: Escape                                       | Example: Translocation                                       |
+|-------------------------------------------------------|--------------------------------------------------------------|
+| ![](images/comparison_escape_N15_times_histogram.jpg) | ![](images/comparison_translocation_N15_times_histogram.jpg) |
+
+* Collapse of histograms for one simulation but for different number of monomers in a polymer
+  (either as plain histogram or a PDF estimated using seaborn KDE)
+
+| Example: Histograms                                | Example: KDE                                 |
+|----------------------------------------------------|----------------------------------------------|
+| ![](images/FB_collapse_escape_times_histogram.jpg) | ![](images/FB_collapse_escape_times_KDE.jpg) |
+
+* Fit for deriving universal escape/translocation time scaling 
+* (for each model separately as well as fit comparison)
+
+| Example: Escape                         | Example: Translocation                         |
+|-----------------------------------------|------------------------------------------------|
+| ![](images/comparison_escape_times.jpg) | ![](images/comparison_translocation_times.jpg) |
+
+* Waiting times for each monomer in polymer chain
+
+| Example: FB                         | Example: LD                         |
+|-------------------------------------|-------------------------------------|
+| ![](images/FB_waiting_times_40.jpg) | ![](images/LD_waiting_times_40.jpg) |
 
 ### Prerequisites
 
